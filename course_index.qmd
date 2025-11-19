@@ -1,0 +1,40 @@
+---
+title: "Course : Basics of statistics"
+format: 
+  html:
+    code-fold: true
+    embed-resources: true 
+editor: visual
+---
+
+```{=html}
+<style>
+  details > summary {  
+    padding: 4px;  
+    width: 400px;  
+    background-color: #eeeeee;  
+    border: none;  
+    box-shadow: 1px 1px 2px #bbbbbb;  
+    cursor: pointer;
+  }
+  details > p {  
+    background-color: #E0F8EC;  
+    padding: 4px;  
+    margin: 0;  
+    box-shadow: 1px 1px 2px #bbbbbb;
+  }
+</style>
+```
+
+```{r, setup, echo=F, warning=FALSE,message=FALSE}
+require("knitr")
+```
+
+# Goal of this course
+
+This course aims to help you (re)discover the basics of statistics.
+The goal is to understand what statistics are, what they correspond to, and why we use them.
+
+You will learn how to describe your data, define a statistical approach, and choose and use statistical tests that are appropriate for your issues and data.
+
+## Course sheets
