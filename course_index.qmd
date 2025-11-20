@@ -1,7 +1,7 @@
 ---
 title: "Course : Basics of statistics"
 format: 
-  html:
+  html: default
     code-fold: true
     embed-resources: true 
 editor: visual
@@ -32,9 +32,10 @@ require("knitr")
 
 # Goal of this course
 
-This course aims to help you (re)discover the basics of statistics.
-The goal is to understand what statistics are, what they correspond to, and why we use them.
+This course aims to help you (re)discover the basics of statistics. The goal is to understand what statistics are, what they correspond to, and why we use them.
 
 You will learn how to describe your data, define a statistical approach, and choose and use statistical tests that are appropriate for your issues and data.
 
 ## Course sheets
+
+-   [Introduction to the concept of statistic](./intro.html)
