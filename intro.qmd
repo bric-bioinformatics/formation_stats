@@ -1,7 +1,7 @@
 ---
 title: "Introduction about statistics"
 format: 
-  html: default
+  html: 
     code-fold: true
     embed-resources: true 
 editor: visual
@@ -37,11 +37,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Whether in marketing (products), agronomy (plants), or clinical research (patients), we work with entities that differ from one another: this is what we call **variability**.
 
+![](./Images/variability.drawio.svg){fig-align="center"}
+
 In an ideal world, to answer a question, we would work with all the individuals who are affected by our question. For example, I want to study the different mechanisms of liver cancer. I could then collect data from all patients with liver cancer worldwide. This corresponds to the **population**.
+
+![](./Images/population_sample.drawio.svg){fig-align="center"}
 
 For obvious reasons of resources and time, it is impossible to work with an entire population. We then work on a **sample**.
 
-**Sampling** is an important process because it must be as representative as possible of a **population**. 
+**Sampling** is an important process because it must be as representative as possible of a **population**.
 
-It is in this basic context that **statistics** come into play. Their purpose is to provide a numerical summary of a **sample** that will estimate the characteristics of a **population**. 
+It is in this basic context that **statistics** come into play. Their purpose is to provide a numerical summary of a **sample** that will estimate the characteristics of a **population**.
 
+## Why use statistics ?
