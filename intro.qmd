@@ -50,3 +50,9 @@ For obvious reasons of resources and time, it is impossible to work with an enti
 It is in this basic context that **statistics** come into play. Their purpose is to provide a numerical summary of a **sample** that will estimate the characteristics of a **population**.
 
 ## Why use statistics ?
+
+- **Descriptive statistics** : Collect, represent and summarise the information contained in a sample (means, proportions, spreads) so we can estimate the characteristics of the whole population.
+
+- **Probabilities** : Quantify the uncertainty that comes from looking at only part of the world : how much that estimate would change, if we drew another sample.
+
+- **Statistical inference** : Make informed decisions despite that uncertainty, because we know how reliable our estimates are.

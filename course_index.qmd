@@ -1,7 +1,7 @@
 ---
 title: "Course : Basics of statistics"
 format: 
-  html: default
+  html: 
     code-fold: true
     embed-resources: true 
 editor: visual
@@ -39,3 +39,4 @@ You will learn how to describe your data, define a statistical approach, and cho
 ## Course sheets
 
 -   [Introduction to the concept of statistic](./intro.html)
+-   [Descriptive statistics](./descriptive_stats.html)
