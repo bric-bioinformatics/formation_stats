@@ -24,11 +24,117 @@ details > p {
   margin: 0;
   box-shadow: 1px 1px 2px #bbbbbb;
 }
+header h1 {
+      font-size: 70px;
+      font-weight: 600;
+      font-palette: tomato;
+    }
 </style>
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, setup, echo=F, warning=FALSE,message=FALSE}
+require("knitr")
+library(readr)
+library(DT)
+library(kableExtra)
+library(tidyverse)
+clinical_data <- read_csv("Datasets/clinical_data.csv")
+```
+[\<\<\< Back to Index](./course_index.html)
+
+**Descriptive statistics** summarize and describe the characteristics of a **population** or a **sample** of a population. There are several types of characteristics we can study to extract patterns, trends and the distribution of data from a dataset.
+
+- **Data representation** : Allow to visualize how variables behave in our dataset.
+
+- **Measure of central tendency** : Describe the center of the data (***mean***, ***median***, ***mode***).
+
+- **Measure of variability** : Describe the dispersion of the data (***variance***, ***standard deviation***).
+
+- **Measure of frequency distribution** : Describe the occurrence of data (***count***).
+
+## Toy dataset : `clinical_data`
+
+We are going to use a synthetic dataset containing 150 patients who went to the hospital due to symptoms corresponding to possible cardiovascular problems. For each patient, 8 observations (variables) were recorded. 
+
+```{r, echo=F}
+datatable(clinical_data, options = list(pageLength = 10))
 ```
 
-[\<\<\< Back to Index](./course_index.html)
+## Types of variables
+
+Before diving into the data, it is important to know them. A major point that will drive the analytical strategy is to know what variable(s) we have and what type they belong to.
+
+Generally, variables are divided into two categories : **quantitative** and **qualitative**.
+
+- **Quantitative** : Corresponds to a variable that can be counted/quantified
+- **Qualitative** : Corresponds to a variable that can be categorized/ordered but **cannot be quantified**.
+
+### Qualitative variables
+
+- **Nominal** : Describes a name, a label or a category, one or more, without specific order.
+- **Ordinal** : Defines an order relation (hierarchy) between the different categories.
+- **Binary** : Nominal variables which have only two categories or level.
+
+### Quantitative variables
+
+- **Discrete** : Takes finite number of real and distinct values.
+- **Continuous** : Takes non-finite number of values.
+
+![](./Images/types_variables.drawio.svg){fig-align="center"}
+
+### Types of variables in `clinical_data`
+
+In our dataset `clinical_data`, we have several types of variables.
+
+```{r, echo=F}
+clinical_data |>
+  head(10) |>
+  kable() |>
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+
+<details>
+
+<summary>Answer</summary>
+::: {style="background-color:LemonChiffon;"}
+- **Continuous** variables = *age*, *height*, *weight* and *glucose*.
+- **Nominal** variables = *diagnosis*.
+- **Ordinal** variables = *treatment_response*.
+- **Nominal Binary** variables = *gender* and *smoking_status*.
+:::
+</details>
+
+## Data representation
+
+**Graphical representation** of certain variables can help to understand the different **characteristics** of the data.
+This initial understanding of the data will help us formulate one or more **hypotheses** that can be verified or disproved later.
+
+There are many ways to view data. We will show you a few that can usually be done using tools such as Excel, GraphPad, or programming languages such as R.
+
+### Histogram
+
+```{r, echo=F}
+ggplot(clinical_data, aes(x = age)) +
+  geom_histogram(binwidth = 2, color = "black", fill = "grey50") +
+  theme_bw() +
+  labs(x = "Age", y = "Frequency") +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
+```
+
+### Density plot
+
+```{r, echo=F}
+ggplot(clinical_data, aes(x = height)) +
+  geom_density(aes(color=gender)) +
+  theme_bw() +
+  labs(x = "Height", y = "Frequency") +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
+```
+
+## Central tendency
+
+
+## Variability / Dispersion
+
