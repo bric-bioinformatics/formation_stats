@@ -205,4 +205,34 @@ $$ {\Large Median = 10} $$
 
 ## Variability / Dispersion
 
-Within a population, individuals are not identical in every respect, whether they are patients, cells, animals, etc.
+Within a population, **individuals are not identical** in every aspect, whether they are patients, cells, animals, etc.
+This will create a difference between individuals for a given variable, and therefore we will have a **dispersion** between the points.
+This measure of dispersion is what is known as **variability**.
+
+```{r, echo=F, message=F}
+ggplot(clinical_data, aes(x = gender, y = height)) +
+  geom_dotplot(binaxis = "y", stackdir = "center", color = "black") +
+  theme_bw() +
+  labs(x = "Gender", y = "Height") +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 14))
+```
+
+### Variance
+
+**Variance** measures the dispersion of the values of a random variable around its mean.
+
+$$ {\Large \sigma^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \mu)^2} $$
+
+When the variance is large, the values will be more dispersed; on the contrary, the smaller the variance, the closer the values will be to the mean.
+
+### Standard deviation
+
+The standard deviation is also an indicator of data dispersion. This indicator shows how much the data deviates from the average.
+
+$$ {\Large \sigma = \sqrt{Variance}} $$
+
+### Interquartile range
+
