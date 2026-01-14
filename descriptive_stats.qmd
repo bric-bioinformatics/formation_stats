@@ -196,7 +196,7 @@ ggplot(clinical_data, aes(x = age)) +
         legend.text = element_text(size = 14))
 ```
 
-However, the median is less sensitive to extreme values than the mean.
+**However, the median is less sensitive to extreme values than the mean.**
 
 *For n = 5:* $$ {\Large [0,5,10,15,1000]} $$
 $$ {\Large Mean = 206} $$
@@ -226,13 +226,33 @@ ggplot(clinical_data, aes(x = gender, y = height)) +
 
 $$ {\Large \sigma^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \mu)^2} $$
 
-When the variance is large, the values will be more dispersed; on the contrary, the smaller the variance, the closer the values will be to the mean.
+When the **variance is large**, the values will be **more dispersed**; on the contrary, the **smaller the variance**, the **closer the values will be to the mean**.
 
 ### Standard deviation
 
-The standard deviation is also an indicator of data dispersion. This indicator shows how much the data deviates from the average.
+The **standard deviation** is also an indicator of data **dispersion**. This indicator shows how much the data deviates from the average.
 
 $$ {\Large \sigma = \sqrt{Variance}} $$
 
+
 ### Interquartile range
+
+The **interquartile range** also allows us to account for the dispersion of data by taking the differences between the **third quartile** and the **first quartile**.
+
+-   **1st quartile** or **Q1** : This is the point below which 25% of points lie (and 75% ar above)
+-   **2nd quatile** or **Q2** or **median** : This is the point which 50% of points lie (and 50% are above)
+-   **3rd quartile** or **Q3** : This is the point below which 75% of points lie (and 25% are above)
+
+![](./Images/interquartile_range.drawio.svg){fig-align="center"}
+
+In the above example :
+
+$$ {\Large IQR = Q3 - Q1 = 175.425 - 161.5 = 13.925} $$ 
+
+This **interquartile range** can also be observed using a box plot, like this : 
+
+![](./Images/boxplot_IQR.drawio.svg){fig-align="center"}
+
+**BONUS** : The value of 1.5 that you see for the distance between the whiskers and the box is a **constant**. The boxplot and this constant were introduced by statistician John Tukey.
+This allows us to limit the number of **outliers** while retaining as much information as possible on our boxplot.
 
