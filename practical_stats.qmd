@@ -1,0 +1,90 @@
+---
+title: "Practical stats"
+format: 
+  html: 
+    code-fold: true
+    embed-resources: true 
+editor: visual
+---
+
+```{=html}
+<style>
+details > summary {
+  padding: 4px;
+  width: 400px;
+  background-color: #eeeeee;
+  border: none;
+  box-shadow: 1px 1px 2px #bbbbbb;
+  cursor: pointer;
+}
+
+details > p {
+  background-color: #E0F8EC;
+  padding: 4px;
+  margin: 0;
+  box-shadow: 1px 1px 2px #bbbbbb;
+}
+header h1 {
+      font-size: 70px;
+      font-weight: 600;
+      font-palette: tomato;
+    }
+</style>
+```
+
+```{r, setup, echo=F, warning=FALSE,message=FALSE}
+require("knitr")
+library(readr)
+library(tidyverse)
+clinical_data <- read_csv("Datasets/clinical_data.csv")
+```
+# Objectives 
+
+The purpose of this section is to provide you with the basics needed to analyze biological data using simple statistics.
+The main objective is to provide you with the tools to :
+
+-   Choose a statistical method appropriate for a biological question
+-   Interpret the results correctly
+-   Analyse data with R
+
+# Discover and explore data : `clinical_data`
+
+## Load the data 
+
+First step to do is to load our dataset called `clinical_data` in our R environment.
+
+comment ?
+
+## Description of the data
+
+rappel types de variables dans le dataset (descriptive part)
+rappel head et str 
+
+summary
+
+# Study 1 : *Do patients with heart disease have a higher heart rate ?*
+
+## First visualisation
+
+```{r, echo=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
+## Hypotheses
+
+H0 et H1
+unilateral (one-tailed) et pourquoi ? diff avec bilateral (two-tailed)
+
+## Independent or paired ?
+
+## Test the parameters
+
+## Application of the statistical test
+
+## Interpretation of the results
+
+
+# Study 2 : une analyse multi-groupes pour anova / krukall
