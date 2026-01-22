@@ -38,10 +38,10 @@ library(readr)
 library(tidyverse)
 clinical_data <- read_csv("Datasets/clinical_data.csv")
 ```
-# Objectives 
 
-The purpose of this section is to provide you with the basics needed to analyze biological data using simple statistics.
-The main objective is to provide you with the tools to :
+# Objectives
+
+The purpose of this section is to provide you with the basics needed to analyze biological data using simple statistics. The main objective is to provide you with the tools to :
 
 -   Choose a statistical method appropriate for a biological question
 -   Interpret the results correctly
@@ -49,22 +49,52 @@ The main objective is to provide you with the tools to :
 
 # Discover and explore data : `clinical_data`
 
-## Load the data 
+## Load the data
 
 First step to do is to load our dataset called `clinical_data` in our R environment.
+You can follow the instruction below.
 
-comment ?
+![](./Images/load_data.svg){fig-align="center"}
 
 ## Description of the data
 
-rappel types de variables dans le dataset (descriptive part)
-rappel head et str 
+The first thing to do before starting the analysis is to observe the dataset in order to define the structure and type of data. You can do it by hand, or you can use R and some functions already built in, without installing any packages.
 
-summary
+### `head`
+
+The first function you can use is `head`. It will returns the **first** (or **last** with `tail`) **rows** of your dataset. By default, **the 6 first (or last) rows** will be returned.
+
+```{r head}
+#| code-fold: false
+head(clinical_data)
+```
+
+### `str`
+
+The function `str` allows to display the **internal structure** of the data. Using this method, we can see the **dimensions** of our dataset, i.e., the number of rows and columns. Here we have **150 rows and 10 columns**.
+You can also see what **type** each column is, like **numerical** or **character**. 
+
+Thanks to this view, we can define more precisely what **type of data** we are dealing with. ([See the descriptive statistics part](./descriptive_stats.html))
+
+```{r str}
+#| code-fold: false
+str(clinical_data)
+```
+
+### `summary`
+
+The `summary` function is very useful because it provides **descriptive statistical results**, as seen in the previous section. For each column, we will find the **median**, the **mean**, and the **quartiles**, among other things.
+
+```{r summary}
+#| code-fold: false
+summary(clinical_data)
+```
 
 # Study 1 : *Do patients with heart disease have a higher heart rate ?*
 
 ## First visualisation
+
+We can start by making a simple observation using a **boxplot** of **heart rate** based on patient **diagnosis** :
 
 ```{r, echo=F}
 ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
@@ -73,18 +103,57 @@ ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
   theme_bw()
 ```
 
-## Hypotheses
+Based on this initial visualization, we can see that there appears to be a **difference in heart rate among patients with heart disease**.
 
-H0 et H1
-unilateral (one-tailed) et pourquoi ? diff avec bilateral (two-tailed)
+## Hypotheses : decision support
+
+A statistical approach is based on reasoning with **two initial solutions** called working **hypotheses**. We find the **null hypothesis** (H0) and the **alternative hypothesis** (H1). 
+
+-   *Null hypothesis* (H0) : corresponds to the **initial assumption**; this hypothesis seeks to confirm that there are **no differences**, for example.
+-   *Alternative hypothesis* (H1) : is the opposite, it suggests that **there is a difference or an effect**.
+
+*In our case, what would be the hypotheses ?*
+
+<details>
+
+<summary>Working hypotheses about our question</summary>
+
+H0 = **The average heart rate is not different or lower in patients with heart disease than in other patients**.
+
+H1 = **The average heart rate is higher in patients with heart disease**.
+
+</details>
+
+In our question, and therefore in our assumptions, there is the notion of **“higher".** The biological question is therefore **directional**. So we will be in a situation where we will be on a **one-tailed test**.
 
 ## Independent or paired ?
 
+This is an important point when doing **statistics**. It is important to know whether our data is **independent** or **paired**.
+
+-   *Independent* : The choice of elements in the first sample has no influence on the choice of elements in the second sample.
+
+-   *Paired* : The choice of elements in the first sample influences the choice of elements in the second sample.
+
+*What would it be in our case ?*
+
+<details>
+
+<summary>Independent or paired data ?</summary>
+
+All patients in our dataset are **different** from each other and were not selected based on others, so we can say that our samples are **independent**. 
+
+</details>
+
 ## Test the parameters
+
+There are many statistical tests available, and it is easy to get confused. Depending on the **biological question** being asked and also on the **data itself**, one test will be used rather than another.
+
+Based on our question, we will seek to **compare groups**, in this case one diagnostic group (**heart disease**) versus the **other diagnostic groups**.
+
+The ultimate goal is to compare the heart rate of patients with heart disease with that of other patients.
 
 ## Application of the statistical test
 
 ## Interpretation of the results
-
 
 # Study 2 : une analyse multi-groupes pour anova / krukall
