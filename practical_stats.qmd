@@ -51,8 +51,7 @@ The purpose of this section is to provide you with the basics needed to analyze 
 
 ## Load the data
 
-First step to do is to load our dataset called `clinical_data` in our R environment.
-You can follow the instruction below.
+First step to do is to load our dataset called `clinical_data` in our R environment. You can follow the instruction below.
 
 ![](./Images/load_data.svg){fig-align="center"}
 
@@ -71,8 +70,7 @@ head(clinical_data)
 
 ### `str`
 
-The function `str` allows to display the **internal structure** of the data. Using this method, we can see the **dimensions** of our dataset, i.e., the number of rows and columns. Here we have **150 rows and 10 columns**.
-You can also see what **type** each column is, like **numerical** or **character**. 
+The function `str` allows to display the **internal structure** of the data. Using this method, we can see the **dimensions** of our dataset, i.e., the number of rows and columns. Here we have **150 rows and 10 columns**. You can also see what **type** each column is, like **numerical** or **character**.
 
 Thanks to this view, we can define more precisely what **type of data** we are dealing with. ([See the descriptive statistics part](./descriptive_stats.html))
 
@@ -96,6 +94,13 @@ summary(clinical_data)
 
 We can start by making a simple observation using a **boxplot** of **heart rate** based on patient **diagnosis** :
 
+```{r, eval=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
 ```{r, echo=F}
 ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
   geom_boxplot() + 
@@ -107,7 +112,7 @@ Based on this initial visualization, we can see that there appears to be a **dif
 
 ## Hypotheses : decision support
 
-A statistical approach is based on reasoning with **two initial solutions** called working **hypotheses**. We find the **null hypothesis** (H0) and the **alternative hypothesis** (H1). 
+A statistical approach is based on reasoning with **two initial solutions** called working **hypotheses**. We find the **null hypothesis** (H0) and the **alternative hypothesis** (H1).
 
 -   *Null hypothesis* (H0) : corresponds to the **initial assumption**; this hypothesis seeks to confirm that there are **no differences**, for example.
 -   *Alternative hypothesis* (H1) : is the opposite, it suggests that **there is a difference or an effect**.
@@ -140,19 +145,135 @@ This is an important point when doing **statistics**. It is important to know wh
 
 <summary>Independent or paired data ?</summary>
 
-All patients in our dataset are **different** from each other and were not selected based on others, so we can say that our samples are **independent**. 
+All patients in our dataset are **different** from each other and were not selected based on others, so we can say that our samples are **independent**.
 
 </details>
 
-## Test the parameters
+## Test choice
 
 There are many statistical tests available, and it is easy to get confused. Depending on the **biological question** being asked and also on the **data itself**, one test will be used rather than another.
 
-Based on our question, we will seek to **compare groups**, in this case one diagnostic group (**heart disease**) versus the **other diagnostic groups**.
+Based on our question, we will seek to **compare groups**, in this case one diagnostic group (**heart disease**) versus the **other diagnostic groups**. So we will compare two groups.
 
-The ultimate goal is to compare the heart rate of patients with heart disease with that of other patients.
+Now the question we must ask ourselves is : **Are we trying to compare averages, distributions, proportions, etc.?**
 
-## Application of the statistical test
+### Compare means
+
+To compare means, there is a determination key for choosing the right test based on the data. There are two keys depending on whether the samples are independent or paired.
+
+![](./Images/determination_ind_samples.drawio.svg){fig-align="center"}
+
+![](./Images/determination_paired_samples.drawio.svg){fig-align="center"}
+
+Based on those information, what should we use as a determination key ?
+
+<details>
+
+<summary>Response</summary>
+
+As we identified above, we are working with **independent samples**. The aim is to compare the **average heart rates** between **patients with heart disease** and **other patients** (2 group). We will start with **the key for independent samples**.
+
+</details>
+
+### Conditions of application
+
+The first **condition of application** that we seek to verify is **normality**. To check normality, the first thing we can do is look at how the data we are interested in is **distributed**, graphically.
+
+#### Histogram
+
+Here, we will look at the distribution of heart rates in patients with heart disease.
+
+```{r, eval = F}
+hist(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+     main = "Heart rate from patients with heart disease",
+     col = "red",
+     xlab = "Heart rate")
+```
+
+```{r, echo=F}
+hist(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+     main = "Heart rate from patients with heart disease",
+     col = "red",
+     xlab = "Heart rate")
+```
+
+How can this histogram be interpreted?
+
+<details>
+
+<summary>Response</summary>
+
+You have to look at the **shape of the distribution**. If the data approximates a **normal distribution**, then you will see **symmetry** in the data with a **bell shape**.\
+In our case, there seems to be a symmetry emerging with this bell shape : **we can therefore say that the data appear to follow a normal distribution**.
+
+</details>
+
+#### Q-Q plot
+
+A **quantile-quantile** (Q-Q) plot is used to check whether a data set follows a **theoretical distribution**. We do not **compare the data directly**, but rather **their position in the distribution** that we observe.
+
+For example, in our case, we will classify the **heart rate values for patients with heart disease in ascending order** and associate each value with **the corresponding quantile** (10%, 25%, 50%, etc.). For this same **quantile**, we look at what it corresponds to in the **theoretical distribution** (normal distribution in our case).
+
+To be more specific: **the median corresponds to the 50% quantile, which corresponds to 0 in a normal distribution**.
+
+The closer the observed quantiles are to the theoretical quantiles, the closer our data is to a normal distribution.
+
+```{r, eval=F}
+# Q-Q plot with qqnorm function (equivalent of qqplot but for normality)
+qqnorm(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+qqline(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+```
+
+```{r, echo=F}
+qqnorm(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+qqline(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+```
+
+What can be said about this plot?
+
+<details>
+
+<summary>Response</summary>
+
+Despite **slight discrepancies** in the most extreme values, the **observed quantiles appear to follow the theoretical quantiles**. This allows us to hypothesize that **the heart rate values of patients with heart disease appear to follow a normal distribution**.
+
+</details>
+
+#### Statistical approach to check normality
+
+To check for statistical normality, there is a test called the **Shapiro-Wilk test**.
+
+This tool allows you to test whether a **distribution deviates significantly from a normal distribution**. It is the element that completes the graphical inspection.
+
+As with any statistical analysis, we start with an **initial hypothesis** that we seek to verify through testing.
+
+-   **H0** : the data **follow a normal distribution**
+-   **H1** : the data **do not follow a normal distribution**
+
+If the p-value obtained via the Shapiro test is less than 0.05, then we can **reject the null hypothesis H0**.
+
+NOTE: **Rejecting H0 means that we detect a statistical difference between our data and the Normal distribution**.
+
+```{r, eval=F}
+# Test normality for patients with heart disease
+shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+# Test normality for others patients
+shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"])
+```
+
+**Shapiro-Wilk test on the heart rate variable for patients with heart disease :**
+
+```{r, echo=F}
+shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+```
+
+**Shapiro-Wilk test on the heart rate variable for patients with other diagnosis :**
+
+```{r, echo=F}
+shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"])
+```
+
+How can we interpret those results ?
 
 ## Interpretation of the results
 
