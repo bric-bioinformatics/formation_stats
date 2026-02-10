@@ -275,6 +275,67 @@ shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"
 
 How can we interpret those results ?
 
+<details>
+
+<summary>Response</summary>
+
+We consider that we set a standard **threshold of 5%** (i.e., 0.05). Here, both tests give **p-values that are greater than 0.05**. This means that we **do not detect any significant deviation from normality**. In this case, we can move on to a **parametric test, i.e., Student's t-test**.
+
+</details>
+
+### Homogeneity of variances
+
+This is the **second condition of application** that we need.
+
+When **comparing means between groups**, it is assumed that the **variability** of the measurements is **comparable** in each group.
+This means that the **differences** observed are **not due to one group** being **much more variable than the other**.
+
+The first check we can do is graphically, with **boxplots** like we did earlier.
+
+```{r, eval=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
+```{r, echo=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
+Thanks to this simple representation, we can look at the **appearance of the boxplots**. 
+
+- Are the sizes comparable? 
+- Are there any outliers? 
+- Are the whiskers similar in size or very different?
+
+What do you think about variability here ?
+
+<details>
+
+<summary>Response</summary>
+
+What we observe here is that, overall, **the box and whisker sizes are fairly similar**. However, it should be noted that for hypertension, the box and whiskers are slightly smaller.
+There are **no major differences**.
+
+</details>
+
+For the homogeneity of variances, we can check statistically too with a **Fisher test**.
+This test is used **to determine whether two groups exhibit comparable variability**. 
+**Are the measurements more scattered in one group than in the other ?**
+
+We then make the following assumption :
+
+- **H0** : the variances of **the two groups are equal**
+- **H1** : the variances are **different**
+
+If the p-value obtained is less than 0.05, then we can reject **the null hypothesis H0**.
+
 ## Interpretation of the results
+
+
 
 # Study 2 : une analyse multi-groupes pour anova / krukall
