@@ -273,7 +273,7 @@ shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"
 shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"])
 ```
 
-How can we interpret those results ?
+*How can we interpret those results ?*
 
 <details>
 
@@ -287,8 +287,7 @@ We consider that we set a standard **threshold of 5%** (i.e., 0.05). Here, both 
 
 This is the **second condition of application** that we need.
 
-When **comparing means between groups**, it is assumed that the **variability** of the measurements is **comparable** in each group.
-This means that the **differences** observed are **not due to one group** being **much more variable than the other**.
+When **comparing means between groups**, it is assumed that the **variability** of the measurements is **comparable** in each group. This means that the **differences** observed are **not due to one group** being **much more variable than the other**.
 
 The first check we can do is graphically, with **boxplots** like we did earlier.
 
@@ -306,36 +305,83 @@ ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
   theme_bw()
 ```
 
-Thanks to this simple representation, we can look at the **appearance of the boxplots**. 
+Thanks to this simple representation, we can look at the **appearance of the boxplots**.
 
-- Are the sizes comparable? 
-- Are there any outliers? 
-- Are the whiskers similar in size or very different?
+-   Are the sizes comparable?
+-   Are there any outliers?
+-   Are the whiskers similar in size or very different?
 
-What do you think about variability here ?
+*What do you think about variability here ?*
 
 <details>
 
 <summary>Response</summary>
 
-What we observe here is that, overall, **the box and whisker sizes are fairly similar**. However, it should be noted that for hypertension, the box and whiskers are slightly smaller.
-There are **no major differences**.
+What we observe here is that, overall, **the box and whisker sizes seem a little different**. But the difference remains light and we would expect to see differences between the groups.
 
 </details>
 
-For the homogeneity of variances, we can check statistically too with a **Fisher test**.
-This test is used **to determine whether two groups exhibit comparable variability**. 
-**Are the measurements more scattered in one group than in the other ?**
+For the homogeneity of variances, we can check statistically too with a **Fisher test**. This test is used **to determine whether two groups exhibit comparable variability**. **Are the measurements more scattered in one group than in the other ?**
 
 We then make the following assumption :
 
-- **H0** : the variances of **the two groups are equal**
-- **H1** : the variances are **different**
+-   **H0** : the variances of **the two groups are equal**
+-   **H1** : the variances are **different**
 
 If the p-value obtained is less than 0.05, then we can reject **the null hypothesis H0**.
 
+```{r, eval=F}
+# Test homogeneity of variances between patients with heart disease and the rest.
+var.test(
+    clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+    clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"]
+)
+```
+
+```{r, echo=F}
+var.test(
+    clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+    clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"]
+)
+```
+
+*How can we interpret those results ?*
+
+<details>
+
+<summary>Response</summary>
+
+The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant. It means that we detect a statistical difference between variances. According to the **determination key**, we **cannot directly apply Student's t-test**, but we must apply a correction to this test, called **Welch's correction**.
+
+</details>
+
+## Student t-test with Welch's correction
+
+As you now understand, before embarking on a test, we seek to understand what we are **comparing** and what we would **expect** from the test (hypotheses).
+
+### Principle
+First, let's explain what the **Student's t-test** is. As a reminder, this test allows you to **compare the means** of two samples (independent or paired). 
+Between two samples, we can expect the **averages to fluctuate**. But what we want to know through this test is whether **this fluctuation is due to sampling error**. 
+
+### t-value
+
+To do this, the test relies on a **t-value** calculated by taking into account the **difference in means** and the **expected variability of this difference between samples**.
+The test will compare the **calculated t-value** to a **theoretical t-value** based on the known **Student's distribution**, with a certain **degree of freedom** (noted k in the figure below).
+
+![](./Images/Student_density.svg.png){fig-align="center"}
+
+### Welch's correction
+
+If the variances are too different, we will use **Welch's correction**, which **no longer assumes that the variances are equal**.
+To put it simply, correction allows you to **adjust the degree of freedom** based on variance deviations and the number of samples. 
+
+### Hypotheses
+
+As a reminder, our question is whether patients with heart disease have a higher heart rate than those with other diagnoses. In this question, there is a notion of “higher”, which implies a direction It is not simply a question of whether there is a difference. 
+
+- **H0** : The average heart rate **is not different** in patients with heart disease.
+- **H1** : The average heart rate **is higher** in patients with heart disease.
+
 ## Interpretation of the results
-
-
 
 # Study 2 : une analyse multi-groupes pour anova / krukall
