@@ -279,7 +279,8 @@ shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"
 
 <summary>Response</summary>
 
-We consider that we set a standard **threshold of 5%** (i.e., 0.05). Here, both tests give **p-values that are greater than 0.05**. This means that we **do not detect any significant deviation from normality**. In this case, we can move on to a **parametric test, i.e., Student's t-test**.
+We consider that we set a standard **threshold of 5%** (i.e., 0.05). Here, both tests give **p-values that are greater than 0.05** : **we can't reject H0**.
+This means that we **do not detect any significant deviation from normality**. In this case, we can move on to a **parametric test, i.e., Student's t-test**.
 
 </details>
 
@@ -351,7 +352,8 @@ var.test(
 
 <summary>Response</summary>
 
-The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant. It means that we detect a statistical difference between variances. According to the **determination key**, we **cannot directly apply Student's t-test**, but we must apply a correction to this test, called **Welch's correction**.
+The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant : **we reject H0**.
+It means that we detect a statistical difference between variances. According to the **determination key**, we **cannot directly apply Student's t-test**, but we must apply a correction to this test, called **Welch's correction**.
 
 </details>
 
@@ -377,11 +379,92 @@ To put it simply, correction allows you to **adjust the degree of freedom** base
 
 ### Hypotheses
 
-As a reminder, our question is whether patients with heart disease have a higher heart rate than those with other diagnoses. In this question, there is a notion of “higher”, which implies a direction It is not simply a question of whether there is a difference. 
+As a reminder, our question is whether patients with heart disease have a higher heart rate than those with other diagnoses. In this question, there is a notion of “higher”, which implies a direction. It is not simply a question of whether there is a difference. 
 
 - **H0** : The average heart rate **is not different** in patients with heart disease.
 - **H1** : The average heart rate **is higher** in patients with heart disease.
 
-## Interpretation of the results
+```{r, eval=F}
+# Student t-test with Welch's correction
+t.test(
+  x = clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+  y = clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"],
+  alternative = "greater",
+  var.equal = FALSE
+)
+```
 
-# Study 2 : une analyse multi-groupes pour anova / krukall
+<details>
+
+<summary>About the code above</summary>
+
+To do the test, we use the function `t.test()`. In the function we have several arguments :
+
+  - **x** and **y** =  The two groups we want to compare.
+  - **alternative** = What kind of orientation our question has ? In simple words, here, we want to know if a group is greater than the other. So we precise `alternative = "greater`. If we were only looking for a difference regardless of direction, we would have put `alternative = "two.sided"`.
+  - **var.equal** = It allows you to specify whether the variances between groups are equal or not. This argument is, by default, on `FALSE`. This means that by default, the `t.test()` function applies a Welch's correction.
+
+</details>
+
+```{r, echo=F}
+# Student t-test with Welch's correction
+t.test(
+  x = clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
+  y = clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"],
+  alternative = "greater",
+  var.equal = FALSE
+)
+```
+
+*How can we interpret those results ?*
+
+<details>
+
+<summary>Response</summary>
+
+The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant : **we reject H0**. 
+It means that we detect a statistical difference between the means : **the patients with heart disease have a higher heart rate**.
+
+</details>
+
+
+# Study 2 : *Does the glucose level differ depending on the diagnosis?*
+
+## First visualisation
+
+As we did for the **heart rate**, You can look at the average **glucose** level for each **diagnosis** :
+
+```{r, eval=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = glucose)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Glucose") +
+  theme_bw()
+```
+
+```{r, echo=F}
+ggplot(data = clinical_data, aes(x=diagnosis, y = glucose)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Glucose") +
+  theme_bw()
+```
+
+Compared to the first case study, the question is **posed slightly differently**. In fact, we start without any **preconceptions** (even if we suspect something when looking at the data), and we seek to **determine the difference in average glucose levels between the groups** in order to potentially identify **whether one or more groups are different**.
+
+## Compare means : but how ?
+
+Even if the question is not asked in the same way, the answer seems to be the same: **compare the average glucose level** between **each diagnosis**, 2 by 2. And that's pretty much what we're going to do.
+
+So we could say to ourselves: **“I'm going to do a Student's t-test or a Wilcoxon test for each combination!”**
+That would be possible here, but imagine if we had 20 different diagnoses—it would take a very long time.
+
+Fortunately, there are methods that allow us to **explain a quantitative variable** (in this case, glucose) using a **qualitative variable with several modalities** (diagnosis, with four different diagnoses).
+
+This will initially allow us to see if there is **an overall difference**, and then to go into **detail to see where the difference(s) lies**.
+
+
+schema determination anova/kruskall
+
+## Analysis
+
+
+
