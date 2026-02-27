@@ -36,6 +36,7 @@ header h1 {
 require("knitr")
 library(readr)
 library(tidyverse)
+library(FSA)
 clinical_data <- read_csv("Datasets/clinical_data.csv")
 ```
 
@@ -461,10 +462,146 @@ Fortunately, there are methods that allow us to **explain a quantitative variabl
 
 This will initially allow us to see if there is **an overall difference**, and then to go into **detail to see where the difference(s) lies**.
 
-
-schema determination anova/kruskall
+![](./Images/determination_1_qualitative.drawio.svg){fig-align="center"}
 
 ## Analysis
 
+### Hypotheses
 
+  - H0 = **The mean of glucose across the different diagnoses are equal (no difference)**
+  - H1 = **At least one glucose mean from one diagnosis differs from the other groups.**
 
+### Normality 
+
+As we saw earlier, we need to test the normality of our data in order to determine whether to use a parametric (ANOVA) or nonparametric (Kruskal-Wallis) test.
+
+  - H0 = The data **follow a normal distribution**
+  - H1 = The data **does not follow a normal distribution**
+  
+```{r, eval=F}
+# Q-Q plot with qqnorm function (equivalent of qqplot but for normality)
+qqnorm(clinical_data$glucose)
+qqline(clinical_data$glucose)
+```
+
+```{r, echo=F}
+qqnorm(clinical_data$glucose)
+qqline(clinical_data$glucose)
+```
+  
+  
+```{r, eval=F}
+# Test normality about glucose
+shapiro.test(clinical_data$glucose)
+```
+
+**Shapiro-Wilk test on the glucose variable:**
+```{r, echo=F}
+shapiro.test(clinical_data$glucose)
+```
+
+*How do you interpret those results about normality ?*
+
+<details>
+
+<summary>Response</summary>
+
+Initially, the **quantile-quantile plot analysis** allows us to observe a **deviation in the most extreme values**, which would indicate that **the distribution of our data probably does not follow a normal distribution**.
+This trend is confirmed by the Shapiro test, which gives us a **significant p-value** (below the threshold of 0.05).
+In this case, **we cannot reject H0** and we can consider that the **glucose-related data does not follow a normal distribution**.
+
+</details>
+
+### Testing the hypothesis
+
+First, we will see if at least one of the groups differs in terms of glucose levels or if all groups are equivalent in this aspect.
+
+```{r, eval=F}
+# Kruskal-Wallis test
+kruskal.test(glucose ~ diagnosis, data = clinical_data)
+```
+
+```{r, echo=F}
+# Kruskal-Wallis test
+kruskal.test(glucose ~ diagnosis, data = clinical_data)
+```
+
+*What can you say about this result ?*
+
+<details>
+
+<summary>Response</summary>
+
+The p-value is **below the threshold of 0.05**, which means that it is **significant**. We therefore **reject H0** and consider that **at least one group has a higher or lower glucose level**.
+
+</details>
+
+### Post-Hoc test
+
+Post-hoc in Latin means **“after that”**. This is a category of tests that come after other tests that reveal **a trend**, such as **ANOVA**. Post-hoc tests allow **these trends to be explored** in greater detail in order to draw **more accurate conclusions**.
+It is necessary to use the **post-hoc test appropriate** for the test we used previously.
+Since we performed a **Kruskal-Wallis test**, we will use **Dunn's post-hoc test**.
+
+To be rigorous, before embarking on the post-hoc test, we can make the same assumption for each comparison:
+
+  - H0 = **There is no difference in average glucose levels between diagnosis A and diagnosis B***
+  - H1 =  **There is a difference in average glucose levels between diagnosis A and diagnosis B***
+  
+*A and B being different diagnoses listed in the `diagnosis` column*
+
+```{r, eval=F}
+# Install the FSA package
+install.packages("FSA")
+# Activate the package
+library(FSA)
+
+# Dunn post-hoc
+dunnTest(glucose ~ diagnosis, data = clinical_data)
+```
+
+```{r, echo=F}
+dunnTest(glucose ~ diagnosis, data = clinical_data)
+```
+
+The result of a post-hoc test is almost always presented as follows. We have **each comparison that was made between the different groups**. And for each comparison, we obtain several pieces of information, including the **p-value** and the **adjusted p-value**. 
+
+*How to interpret it ?*
+
+<details>
+
+<summary>Response</summary>
+
+We note that three comparisons, **all with the diagnosis of diabetes**, are **significant** with a p-value less than 0.05.
+For these comparisons, **H0 is rejected**, and we can therefore consider that there is indeed a **difference between patients with diabetes and other patients**.
+For the other comparisons, since the p-value is **not significant**, we **cannot reject H0**; there does not appear to be **any difference between these groups**.
+
+**We can conclude that patients with diabetes have higher glucose levels than other patients.**
+
+</details>
+
+# Study 3 : *Is there a link between age and heart rate?*
+
+## First visualisation
+
+As with any study, it is important to observe the data graphically before embarking on statistical tests.
+Unlike the other two cases, we will simply plot the data as points to see if there is a trend linking the `age` variable with the `heart rate` variable.
+
+```{r, eval=F}
+plot(clinical_data$age, clinical_data$heart_rate, 
+     xlab = "Age", 
+     ylab = "Heart rate")
+```
+
+```{r, echo=F}
+plot(clinical_data$age, clinical_data$heart_rate, 
+     xlab = "Age", 
+     ylab = "Heart rate")
+```
+
+## Correlation
+
+When we try to **explain one quantitative variabl**e using **another quantitative variable**, we call this **correlation**.
+It is also possible to perform **linear regression** when the usual conditions of application are met.
+We refer to **simple linear regression** when seeking to understand the relationship between two quantitative variables, and **multiple linear regression** when seeking to explain a quantitative variable using several quantitative variables.
+
+![](./Images/determination_correlation.drawio.svg){fig-align="center"}
