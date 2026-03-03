@@ -615,6 +615,76 @@ We refer to **simple linear regression** when seeking to understand the relation
 
 ![](./Images/determination_correlation.drawio.svg){fig-align="center"}
 
+There are **three types** of correlation :
+
+  - **Positive correlation** : the two variables have a **direct relationship**. **When one variable increases, the other also increases**. The **r correlation coefficient** is close to 1.
+
+```{r, echo=F}
+set.seed(123)
+
+# Simulate data
+n <- 100
+x_pos <- rnorm(n, 0, 1)
+y_pos <- 2 * x_pos + rnorm(n, 0, 0.5)
+
+# Plot
+plot(x_pos, y_pos,
+     main = "",
+     xlab = "X",
+     ylab = "Y",
+     pch = 19,
+     col = "blue")
+abline(lm(y_pos ~ x_pos), col = "red", lwd = 2)
+```
+
+  - **Negative correlation** : the two variables have an **inverse relationship**. **When one variable increases, the other one decreases**.  The **r correlation coefficient** is close to -1.
+  
+```{r, echo=F}
+set.seed(123)
+
+# Simulate data
+x_neg <- rnorm(n, 0, 1)
+y_neg <- -2 * x_neg + rnorm(n, 0, 0.5)
+
+# Plot
+plot(x_neg, y_neg,
+     main = "",
+     xlab = "X",
+     ylab = "Y",
+     pch = 19,
+     col = "darkgreen")
+abline(lm(y_neg ~ x_neg), col = "red", lwd = 2)
+```
+  
+  - **No correlation** : the two variables have **no relationship**. **A change in one variable does not affect the other**.  The **r correlation coefficient** is around 0.
+  
+```{r, echo=F}
+set.seed(123)
+
+# Simulate data
+x_none <- rnorm(n, 0, 1)
+y_none <- rnorm(n, 0, 1)
+
+# Plot
+plot(x_none, y_none,
+     main = "",
+     xlab = "X",
+     ylab = "Y",
+     pch = 19,
+     col = "purple")
+abline(lm(y_none ~ x_none), col = "red", lwd = 2)
+```
+
+The correlation coefficient provides direction as well as strength:
+
+| r         | Correlation strength      |
+|-----------|---------------------------|
+| 0 < 0.1   | No correlation            |
+| 0.1 < 0.3 | Weak correlation          |
+| 0.3 < 0.5 | Medium correlation        |
+| 0.5 < 0.7 | Strong correlation        |
+| 0.7 < 1   | Very strong correlation   |
+
 ## Analysis
 
 ### Hypotheses
@@ -696,3 +766,61 @@ cor.test(clinical_data$age, clinical_data$heart_rate, method = "pearson")
 ```{r, echo=F}
 cor.test(clinical_data$age, clinical_data$heart_rate, method = "pearson")
 ```
+
+*What can you say about this result ?*
+
+<details>
+
+<summary>Response</summary>
+
+When representing the two variables, it was initially noted **that no correlation trend appeared to emerge**. 
+Pearson's correlation confirms this trend with a **correlation coefficient close to 0** (**r = 0.13**). Furthermore, the **p-value is not significant** (p>0.05), so we **cannot reject the null hypothesis H0** and therefore conclude that the variables `heart_rate` and `age` are not correlated.
+
+</details>
+
+## To go further about correlation
+
+### Correlation vs causality
+
+Correlation should not be confused with **causation**. When two variables are **strongly correlated**, we tend to say: “**My variable A is influenced by my variable B**.” A correlation analysis **cannot determine** whether there is a **cause-and-effect relationship** between two variables.
+
+*For example, we could easily find a correlation between ice cream consumption and the number of swimming accidents in the summer. However, despite this correlation, this does not mean that eating ice cream causes swimming accidents.*
+
+**It is important to keep in mind that a positive or negative correlation may be the result of chance.**
+
+### Correlation in R
+
+For our question, we only looked at the correlation between two quantitative variables in our dataset. It is also possible to perform a **more exploratory analysis** that **compares each quantitative variable with each other**.
+
+To do this, **we must work with quantitative variables** and the very first step is to graphically **visualize the relationship** between variables using a **scatterplot**.
+
+```{r, eval=F}
+# Multiple scatterplots
+pairs(clinical_data %>% select(where(is.numeric), -patient_id))
+```
+
+```{r, echo=F}
+# Multiple scatterplots
+pairs(clinical_data %>% select(where(is.numeric), -patient_id))
+```
+
+Then there is a function called `cor()` that calculates each correlation coefficient between the variables.
+
+```{r, eval=F}
+# Correlation between every quantitative variable (numeric)
+clinical_data %>%
+  select(where(is.numeric)) %>% # Select only numeric columns
+  cor(method = "spearman", use = "pairwise.complete.obs") # cor() function
+```
+
+```{r, echo=F}
+# Correlation between every quantitative variable (numeric)
+clinical_data %>%
+  select(where(is.numeric)) %>% # Select only numeric columns
+  cor(method = "spearman", use = "pairwise.complete.obs") # cor() function
+```
+
+As you can see in the method parameter, we use **Spearman's correlation coefficient** rather than **Pearson's**. As a reminder, **Spearman's method is a non-parametric method** that does not assume normality and is much **less sensitive to extreme values**.
+When we have many variables with many values, it is easier to use this method.
+
+As for the `use` parameter, it is important because it defines the **rules for using data when it is missing**. With the `pairwise.complete.obs` argument, we define that only pairs of values between variables where there is **no missing data will be used**.
