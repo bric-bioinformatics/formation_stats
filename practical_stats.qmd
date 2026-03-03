@@ -37,6 +37,7 @@ require("knitr")
 library(readr)
 library(tidyverse)
 library(FSA)
+library(corrplot)
 clinical_data <- read_csv("Datasets/clinical_data.csv")
 ```
 
@@ -824,3 +825,23 @@ As you can see in the method parameter, we use **Spearman's correlation coeffici
 When we have many variables with many values, it is easier to use this method.
 
 As for the `use` parameter, it is important because it defines the **rules for using data when it is missing**. With the `pairwise.complete.obs` argument, we define that only pairs of values between variables where there is **no missing data will be used**.
+
+It is also possible to display the coefficients in color in a **correlation plot graph**.
+
+```{r, eval=F}
+# Correlation plot between every quantitative variable (numeric)
+corrplot(clinical_data %>%
+             select(where(is.numeric)) %>% # Select only numeric columns
+             cor(method = "spearman", use = "pairwise.complete.obs"), # cor() function
+         method = "number", # display coef directly
+         type = "upper") # display only upper part 
+```
+
+```{r, echo=F}
+# Correlation plot between every quantitative variable (numeric)
+corrplot(clinical_data %>%
+             select(where(is.numeric)) %>% # Select only numeric columns
+             cor(method = "spearman", use = "pairwise.complete.obs"), # cor() function
+         method = "number", # display coef directly
+         type = "upper") # display only upper part 
+```
