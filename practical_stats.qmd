@@ -89,11 +89,11 @@ The `summary` function is very useful because it provides **descriptive statisti
 summary(clinical_data)
 ```
 
-# Study 1 : *Do patients with heart disease have a higher heart rate ?*
+# Study 1 : *Do patients with heart disease have a higher heart rate than patients with no particular disease ?*
 
 ## First visualisation
 
-We can start by making a simple observation using a **boxplot** of **heart rate** based on patient **diagnosis** :
+We can start by making a simple observation using a **boxplot** of **heart rate** based on **diagnosis** :
 
 ```{r, eval=F}
 ggplot(data = clinical_data, aes(x=diagnosis, y = heart_rate)) +
@@ -124,7 +124,7 @@ A statistical approach is based on reasoning with **two initial solutions** call
 
 <summary>Working hypotheses about our question</summary>
 
-H0 = **The average heart rate is not different or lower in patients with heart disease than in other patients**.
+H0 = **The average heart rate is not different or lower in patients with heart disease than in patients with no disease**.
 
 H1 = **The average heart rate is higher in patients with heart disease**.
 
@@ -150,17 +150,26 @@ All patients in our dataset are **different** from each other and were not selec
 
 </details>
 
-## Test choice
+## Choice of the test
 
 There are many statistical tests available, and it is easy to get confused. Depending on the **biological question** being asked and also on the **data itself**, one test will be used rather than another.
 
-Based on our question, we will seek to **compare groups**, in this case one diagnostic group (**heart disease**) versus the **other diagnostic groups**. So we will compare two groups.
+Based on our question, we will seek to **compare groups**, in this case one diagnostic group (**heart disease**) versus the **other diagnostic groups**. So we will compare two possibilities.
 
 Now the question we must ask ourselves is : **Are we trying to compare averages, distributions, proportions, etc.?**
+
+<details>
+
+<summary>Response</summary>
+
+To answer our question, we will compare the two groups of patients, `Heart Disease` and `No Disease`; using the variable `heart_rate` by comparing the **mean** for each group.
+
+</details>
 
 ### Compare means
 
 To compare means, there is a determination key for choosing the right test based on the data. There are two keys depending on whether the samples are independent or paired.
+
 
 ![](./Images/determination_ind_samples.drawio.svg){fig-align="center"}
 
@@ -178,22 +187,28 @@ As we identified above, we are working with **independent samples**. The aim is 
 
 ### Conditions of application
 
+Some tests require certain **conditions** to be verified. These are called **parametric tests** (as opposed to **non-parametric tests**). 
+
+**Parametric tests** are calculated under the **assumption** that the population from which the data (samples) are drawn was **normally distributed**, as this is the **most common distribution in nature**.
+
+#### **Normality**
+
 The first **condition of application** that we seek to verify is **normality**. To check normality, the first thing we can do is look at how the data we are interested in is **distributed**, graphically.
 
-#### Histogram
+##### *Histogram*
 
-Here, we will look at the distribution of heart rates in patients with heart disease.
+Here, we will look at the distribution of heart rates in patients in general.
 
 ```{r, eval = F}
-hist(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-     main = "Heart rate from patients with heart disease",
+hist(clinical_data$heart_rate,
+     main = "Heart rate from all patients",
      col = "red",
      xlab = "Heart rate")
 ```
 
 ```{r, echo=F}
-hist(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-     main = "Heart rate from patients with heart disease",
+hist(clinical_data$heart_rate,
+     main = "Heart rate from all patients",
      col = "red",
      xlab = "Heart rate")
 ```
@@ -209,11 +224,12 @@ In our case, there seems to be a symmetry emerging with this bell shape : **we c
 
 </details>
 
-#### Q-Q plot
+
+##### *Q-Q plot*
 
 A **quantile-quantile** (Q-Q) plot is used to check whether a data set follows a **theoretical distribution**. We do not **compare the data directly**, but rather **their position in the distribution** that we observe.
 
-For example, in our case, we will classify the **heart rate values for patients with heart disease in ascending order** and associate each value with **the corresponding quantile** (10%, 25%, 50%, etc.). For this same **quantile**, we look at what it corresponds to in the **theoretical distribution** (normal distribution in our case).
+For example, in our case, we will classify the **heart rate values for all patients in ascending order** and associate each value with **the corresponding quantile** (10%, 25%, 50%, etc.). For this same **quantile**, we look at what it corresponds to in the **theoretical distribution** (normal distribution in our case).
 
 To be more specific: **the median corresponds to the 50% quantile, which corresponds to 0 in a normal distribution**.
 
@@ -221,13 +237,13 @@ The closer the observed quantiles are to the theoretical quantiles, the closer o
 
 ```{r, eval=F}
 # Q-Q plot with qqnorm function (equivalent of qqplot but for normality)
-qqnorm(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
-qqline(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+qqnorm(clinical_data$heart_rate)
+qqline(clinical_data$heart_rate)
 ```
 
 ```{r, echo=F}
-qqnorm(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
-qqline(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
+qqnorm(clinical_data$heart_rate)
+qqline(clinical_data$heart_rate)
 ```
 
 What can be said about this plot?
@@ -236,11 +252,11 @@ What can be said about this plot?
 
 <summary>Response</summary>
 
-Despite **slight discrepancies** in the most extreme values, the **observed quantiles appear to follow the theoretical quantiles**. This allows us to hypothesize that **the heart rate values of patients with heart disease appear to follow a normal distribution**.
+Despite **slight discrepancies** in the most extreme values, the **observed quantiles appear to follow the theoretical quantiles**. This allows us to hypothesize that **the heart rate values of all patients appear to follow a normal distribution**.
 
 </details>
 
-#### Statistical approach to check normality
+##### *Statistical approach to check normality*
 
 To check for statistical normality, there is a test called the **Shapiro-Wilk test**.
 
@@ -257,21 +273,13 @@ NOTE: **Rejecting H0 means that we detect a statistical difference between our d
 
 ```{r, eval=F}
 # Test normality for patients with heart disease
-shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
-# Test normality for others patients
-shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"])
+shapiro.test(clinical_data$heart_rate)
 ```
 
-**Shapiro-Wilk test on the heart rate variable for patients with heart disease :**
+**Shapiro-Wilk test on the heart rate variable for all patients :**
 
 ```{r, echo=F}
-shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"])
-```
-
-**Shapiro-Wilk test on the heart rate variable for patients with other diagnosis :**
-
-```{r, echo=F}
-shapiro.test(clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"])
+shapiro.test(clinical_data$heart_rate)
 ```
 
 *How can we interpret those results ?*
@@ -285,7 +293,7 @@ This means that we **do not detect any significant deviation from normality**. I
 
 </details>
 
-### Homogeneity of variances
+#### **Homogeneity of variances**
 
 This is the **second condition of application** that we need.
 
@@ -333,17 +341,17 @@ We then make the following assumption :
 If the p-value obtained is less than 0.05, then we can reject **the null hypothesis H0**.
 
 ```{r, eval=F}
-# Test homogeneity of variances between patients with heart disease and the rest.
+# Test homogeneity of variances between patients with heart disease and no disease.
 var.test(
     clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-    clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"]
+    clinical_data$heart_rate[clinical_data$diagnosis == "No Disease"]
 )
 ```
 
 ```{r, echo=F}
 var.test(
     clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-    clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"]
+    clinical_data$heart_rate[clinical_data$diagnosis == "No Disease"]
 )
 ```
 
@@ -353,16 +361,17 @@ var.test(
 
 <summary>Response</summary>
 
-The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant : **we reject H0**.
-It means that we detect a statistical difference between variances. According to the **determination key**, we **cannot directly apply Student's t-test**, but we must apply a correction to this test, called **Welch's correction**.
+The test gives a **p-value that is larger than the threshold of 0.05**, it is not significant : **we can't reject H0**.
+It means that we don't detect a statistical difference between variances. According to the **determination key**, we **can directly apply Student's t-test**, without correction.
 
 </details>
 
-## Student t-test with Welch's correction
+## Student t-test
 
 As you now understand, before embarking on a test, we seek to understand what we are **comparing** and what we would **expect** from the test (hypotheses).
 
 ### Principle
+
 First, let's explain what the **Student's t-test** is. As a reminder, this test allows you to **compare the means** of two samples (independent or paired). 
 Between two samples, we can expect the **averages to fluctuate**. But what we want to know through this test is whether **this fluctuation is due to sampling error**. 
 
@@ -382,16 +391,16 @@ To put it simply, correction allows you to **adjust the degree of freedom** base
 
 As a reminder, our question is whether patients with heart disease have a higher heart rate than those with other diagnoses. In this question, there is a notion of “higher”, which implies a direction. It is not simply a question of whether there is a difference. 
 
-- **H0** : The average heart rate **is not different** in patients with heart disease.
+- **H0** : The average heart rate **is not different** in patients with heart disease than in patients with no disease.
 - **H1** : The average heart rate **is higher** in patients with heart disease.
 
 ```{r, eval=F}
-# Student t-test with Welch's correction
+# Student t-test 
 t.test(
   x = clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-  y = clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"],
+  y = clinical_data$heart_rate[clinical_data$diagnosis == "No Disease"],
   alternative = "greater",
-  var.equal = FALSE
+  var.equal = TRUE
 )
 ```
 
@@ -408,12 +417,12 @@ To do the test, we use the function `t.test()`. In the function we have several 
 </details>
 
 ```{r, echo=F}
-# Student t-test with Welch's correction
+# Student t-test
 t.test(
   x = clinical_data$heart_rate[clinical_data$diagnosis == "Heart Disease"],
-  y = clinical_data$heart_rate[clinical_data$diagnosis != "Heart Disease"],
+  y = clinical_data$heart_rate[clinical_data$diagnosis == "No Disease"],
   alternative = "greater",
-  var.equal = FALSE
+  var.equal = TRUE
 )
 ```
 
@@ -424,7 +433,7 @@ t.test(
 <summary>Response</summary>
 
 The test gives a **p-value that is smaller than the threshold of 0.05**, it is significant : **we reject H0**. 
-It means that we detect a statistical difference between the means : **the patients with heart disease have a higher heart rate**.
+It means that we detect a statistical difference between the means : **the patients with heart disease have a higher heart rate compared to patients with no disease**.
 
 </details>
 
@@ -600,8 +609,90 @@ plot(clinical_data$age, clinical_data$heart_rate,
 
 ## Correlation
 
-When we try to **explain one quantitative variabl**e using **another quantitative variable**, we call this **correlation**.
+When we try to **explain one quantitative variable** using **another quantitative variable**, we call this **correlation**.
 It is also possible to perform **linear regression** when the usual conditions of application are met.
 We refer to **simple linear regression** when seeking to understand the relationship between two quantitative variables, and **multiple linear regression** when seeking to explain a quantitative variable using several quantitative variables.
 
 ![](./Images/determination_correlation.drawio.svg){fig-align="center"}
+
+## Analysis
+
+### Hypotheses
+
+  - H0 = **The variables `heart_rate` and `age` are not related**.
+  - H1 = **The variables `heart_rate` and `age` are related to each other**.
+
+### Normality
+
+  - H0 = The data **follow a normal distribution**
+  - H1 = The data **does not follow a normal distribution**
+  
+
+**Ages in all patients :**
+```{r, eval=F}
+# Q-Q plot with qqnorm function (equivalent of qqplot but for normality)
+qqnorm(clinical_data$age)
+qqline(clinical_data$age)
+```
+
+```{r, echo=F}
+qqnorm(clinical_data$age)
+qqline(clinical_data$age)
+```
+
+```{r, eval=F}
+# Test normality about age
+shapiro.test(clinical_data$age)
+```
+
+```{r, echo=F}
+shapiro.test(clinical_data$age)
+```
+
+
+**Heart rates in all patients :**
+
+```{r, eval=F}
+# Q-Q plot with qqnorm function (equivalent of qqplot but for normality)
+qqnorm(clinical_data$heart_rate)
+qqline(clinical_data$heart_rate)
+```
+
+```{r, echo=F}
+qqnorm(clinical_data$heart_rate)
+qqline(clinical_data$heart_rate)
+```
+
+```{r, eval=F}
+# Test normality about heart rate
+shapiro.test(clinical_data$heart_rate)
+```
+
+```{r, echo=F}
+shapiro.test(clinical_data$heart_rate)
+```
+
+*How do you interpret those results about normality ?*
+
+<details>
+
+<summary>Response</summary>
+
+In the **quantile-quantile plot analysis** we don't observe deviations , which would indicate that **the distribution of our data probably does follow a normal distribution**.
+This trend is confirmed by the Shapiro test, which gives us a **non-significant p-value** (above the threshold of 0.05).
+In this case, **we reject H0** and we can consider that the **data follow a normal distribution**.
+
+</details>
+
+### Testing the hypothesis
+
+Based on the above determination key, we can therefore proceed with a **Pearson correlation test**.
+
+```{r, eval=F}
+# Pearson correlation
+cor.test(clinical_data$age, clinical_data$heart_rate, method = "pearson")
+```
+
+```{r, echo=F}
+cor.test(clinical_data$age, clinical_data$heart_rate, method = "pearson")
+```
