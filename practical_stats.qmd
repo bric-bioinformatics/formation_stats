@@ -845,3 +845,69 @@ corrplot(clinical_data %>%
          method = "number", # display coef directly
          type = "upper") # display only upper part 
 ```
+
+# Study 4 : *"Is the proportion of smokers different between patients with heart disease and patients with no disease?"*
+
+## First visualisation
+
+Unlike the other cases we have studied, we can simply create a **table**, called a **contingency table**, which will allow us to count the number of people who smoke or do not smoke in each group.
+
+```{r, eval=F}
+# Contingency table
+tab <- table(
+     clinical_data$smoking_status[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")],
+     clinical_data$diagnosis[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")]
+     )
+```
+
+```{r, echo=F}
+# Contingency table
+table(
+     clinical_data$smoking_status[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")],
+     clinical_data$diagnosis[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")]
+     )
+```
+
+## Compare proportions
+
+When comparing numbers of **individuals** or **proportions**, we compare **two or more qualitative variables where there are two or more classes**.
+
+![](./Images/proportions.drawio.svg){fig-align="center"}
+
+## Analysis
+
+### Hypotheses
+
+  - H0 = **The proportion of smokers is the same in both groups**
+  - H1 = **The proportion of smokers is different**
+  
+### Cochran theorem
+
+**Cochran's rule** is a theorem that requires **a minimum sample size of 5 to be respected for each class** in the contingency table. In our case, we do have more than 5 patients in each class. We can then use the **chi-square homogeneity test**.
+
+### Testing the hypothesis
+
+```{r, eval=F}
+# Chi-square homogeneity test
+chisq.test(tab)
+```
+
+```{r, echo=F}
+# Chi-square homogeneity test
+tab <- table(
+     clinical_data$smoking_status[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")],
+     clinical_data$diagnosis[clinical_data$diagnosis %in% c("Heart Disease", "No Disease")]
+     )
+
+chisq.test(tab)
+```
+
+*How do you interpret this result ?*
+
+<details>
+
+<summary>Response</summary>
+
+The test gives us a **p-value greater than 0.05**, so it is **not significant**. This **does not allow us to reject H0**, and therefore we can say that **the proportions of smokers and non-smokers are the same among those with heart disease and those without**.
+
+</details>
