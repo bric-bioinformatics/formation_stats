@@ -1,5 +1,5 @@
 ---
-title: "Practical stats"
+title: "Examples of practical studies"
 format: 
   html: 
     code-fold: true
@@ -566,14 +566,15 @@ install.packages("FSA")
 library(FSA)
 
 # Dunn post-hoc
-dunnTest(glucose ~ diagnosis, data = clinical_data)
+dunnTest(glucose ~ diagnosis, data = clinical_data, kw = F) #kw = F allow to not redo the Kruskal-Wallis test
 ```
 
 ```{r, echo=F}
-dunnTest(glucose ~ diagnosis, data = clinical_data)
+dunnTest(glucose ~ diagnosis, data = clinical_data, kw = F)
 ```
 
 The result of a post-hoc test is almost always presented as follows. We have **each comparison that was made between the different groups**. And for each comparison, we obtain several pieces of information, including the **p-value** and the **adjusted p-value**. 
+We also have a **Z-score**, which is calculated based on the **ratio between the difference in mean and the difference in standard error**.
 
 *How to interpret it ?*
 
