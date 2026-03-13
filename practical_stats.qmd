@@ -912,3 +912,26 @@ chisq.test(tab)
 The test gives us a **p-value greater than 0.05**, so it is **not significant**. This **does not allow us to reject H0**, and therefore we can say that **the proportions of smokers and non-smokers are the same among those with heart disease and those without**.
 
 </details>
+
+### To go further
+
+Here, the question asked seeks to **determine whether there is a difference**. But it does not delve deeper to see **where the difference lies**. 
+We can look at the **proportion graphically**. This will give us, in addition to the significance test, an idea of the **direction in which the difference is going**.
+
+```{r, eval=F}
+# Observe proportions graphically
+ggplot(clinical_data, aes(x = diagnosis, fill = smoking_status)) + 
+  geom_bar(position = "fill")+ 
+  theme_bw() +
+  labs(x = "", y = "Proportion")
+```
+
+```{r, echo=F}
+ggplot(clinical_data, aes(x = diagnosis, fill = smoking_status)) + 
+  geom_bar(position = "fill")+ 
+  theme_bw() +
+  labs(x = "", y = "Proportion")
+```
+
+However, unlike ANOVA, no commonly accepted post-hoc for chi-square analysis exists.
+
