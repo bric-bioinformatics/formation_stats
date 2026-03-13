@@ -1,0 +1,485 @@
+---
+title: "Exercices"
+format: 
+  html: 
+    code-fold: true
+    embed-resources: true 
+editor: visual
+---
+
+```{=html}
+<style>
+details > summary {
+  padding: 4px;
+  width: 400px;
+  background-color: #eeeeee;
+  border: none;
+  box-shadow: 1px 1px 2px #bbbbbb;
+  cursor: pointer;
+}
+
+details > p {
+  background-color: #E0F8EC;
+  padding: 4px;
+  margin: 0;
+  box-shadow: 1px 1px 2px #bbbbbb;
+}
+header h1 {
+      font-size: 70px;
+      font-weight: 600;
+      font-palette: tomato;
+    }
+</style>
+```
+
+```{r, setup, echo=F, warning=FALSE,message=FALSE}
+require("knitr")
+library(readr)
+library(tidyverse)
+library(FSA)
+library(corrplot)
+data_exercice <- read_csv("Datasets/data_exercice.csv")
+```
+
+# Objectives
+
+The objective of this section is to train you in using the various statistical tests we have seen and interpreting them.
+Several questions will be asked. It is up to you to understand them clearly and use the most appropriate statistical approach to answer them.
+
+# About the data
+
+The Pellegrin University Hospital in Bordeaux conducted a voluntary study on 150 patients to examine health factors such as blood sugar, cholesterol, and high blood pressure on a sample of the population of Bordeaux. The results are presented in the dataset called `data_exercise`. You'll need to explore this data a little. This is the first step to take before asking questions and diving into statistics.
+
+  - **After loading the data, identify the types of variables in the dataset**
+  
+<details>
+
+<summary>Types of variables</summary>
+
+  - `sex` : **qualitative** *nominal*
+  - `age` : **quantitative** *continuous*
+  - `height_cm` : **quantitative** *continuous*
+  - `weight_kg` : **quantitative** *continuous*
+  - `bmi` : **quantitative** *continuous*
+  - `glucose` : **quantitative** *continuous*
+  - `cholesterol_total` : **quantitative** *continuous*
+  - `bmi_category`: **qualitative** *ordinal*
+  - `physical_activity`: **qualitative** *ordinal*
+  - `hypertension` : **qualitative** *nominal binary*
+
+</details>
+
+  - **How to explore data with R?**
+
+<details>
+
+<summary>Explore data</summary>
+
+```{r, eval=F}
+summary(data_exercice)
+```
+
+```{r, echo=F}
+summary(data_exercice)
+```
+
+</details>
+
+# Questions
+
+For each question, you have the analysis process described in the hidden section. You can consult it if you get stuck or if you want to check your reasoning!
+
+### I -  **Is there a link between BMI and cholesterol levels?**
+
+<details>
+
+<summary>Response</summary>
+
+The question asked seeks to determine whether there is a **link between two variables**. Both variables are **quantitative**. We will therefore perform a **correlation test** between `BMI` and `cholesterol` levels.
+
+<details>
+
+<summary>Visualisation of data</summary>
+
+The first step is to look at the data and see how it behaves in a simple plot.
+
+```{r, eval=F}
+plot(data_exercice$bmi, data_exercice$cholesterol_total, 
+     xlab = "BMI", 
+     ylab = "Total cholesterol (g/L)")
+```
+
+```{r, echo=F}
+plot(data_exercice$bmi, data_exercice$cholesterol_total, 
+     xlab = "BMI", 
+     ylab = "Total cholesterol (g/L)")
+```
+
+There is a slight trend where the two variables seem to follow each other, but to what extent?
+
+</details>
+
+<details>
+
+<summary>Hypotheses</summary>
+
+  - H0 = **The variables `BMI` and `cholesterol_total` are not related**
+  - H1 = **The variables `BMI` and `cholesterol_total` are related**
+
+</details>
+
+<details>
+
+<summary>Condition</summary>
+
+The main parameter to check is the normality of the data. This can be done using the Shapiro test or by graphically visualizing the quantiles :
+
+  - H0 = **The data follow a normal distribution**
+  - H1 = **The data does not follow a normal distribution**
+  
+  
+##### `cholesterol_total`
+```{r, eval=F}
+# Q-Q plot with qqnorm function for the cholesterol levels
+qqnorm(data_exercice$cholesterol_total)
+qqline(data_exercice$cholesterol_total)
+```
+
+```{r, echo=F}
+qqnorm(data_exercice$cholesterol_total)
+qqline(data_exercice$cholesterol_total)
+```
+
+```{r, eval=F}
+# Shapiro test
+shapiro.test(data_exercice$cholesterol_total)
+```
+
+```{r, echo=F}
+shapiro.test(data_exercice$cholesterol_total)
+```
+
+##### `BMI`
+```{r, eval=F}
+# Q-Q plot with qqnorm function for the cholesterol levels
+qqnorm(data_exercice$bmi)
+qqline(data_exercice$bmi)
+```
+
+```{r, echo=F}
+qqnorm(data_exercice$bmi)
+qqline(data_exercice$bmi)
+```
+
+```{r, eval=F}
+# Shapiro test
+shapiro.test(data_exercice$bmi)
+```
+
+```{r, echo=F}
+shapiro.test(data_exercice$bmi)
+```
+
+For both variables, we obtain **significant p-values**. We therefore **reject H0** in both cases, meaning that the data for these variables **do not follow a normal distribution**.
+
+</details>
+
+<details>
+
+<summary>Test</summary>
+
+Since the normality condition is not met, we use **Spearman's correlation**.
+
+```{r, eval=F}
+# Spearman correlation
+cor.test(data_exercice$bmi, data_exercice$cholesterol_total, method = "spearman")
+```
+
+```{r, echo=F}
+cor.test(data_exercice$bmi, data_exercice$cholesterol_total, method = "spearman")
+```
+
+The p-value obtained is **significant**, so we **reject H0** and consider that there is a **correlation between the two variables**. Furthermore, based on the r value obtained, we can say that the **correlation is weakly positive** (r around 0.2).
+
+</details>
+
+</details>
+
+### II - **Does BMI differ depending on patients' physical activity levels?**
+
+<details>
+
+<summary>Response</summary>
+
+We want to find out whether **BMI differs depending on patients' level of physical activity**. We will therefore compare patients by physical activity group based on their average BMI, **using an ANOVA-type analysis**.
+
+<details>
+
+<summary>Visualisation</summary>
+
+```{r, eval=F}
+ggplot(data = data_exercice, aes(x=physical_activity, y = bmi)) +
+  geom_boxplot() + 
+  labs(x="Levels of physical activity", y = "BMI") +
+  theme_bw()
+```
+
+```{r, echo=F}
+ggplot(data = data_exercice, aes(x=physical_activity, y = bmi)) +
+  geom_boxplot() + 
+  labs(x="Levels of physical activity", y = "BMI") +
+  theme_bw()
+```
+
+It would appear that there is a difference in BMI between the physical activity groups based on this box plot representation, particularly with regard to the group that does little physical activity
+
+</details>
+
+<details>
+
+<summary>Hypotheses</summary>
+
+  - H0 = **The average `BMI` in each physical activity group is not different.**
+  - H1 = **We have at least one physical activity group with a different average `BMI`.**
+
+</details>
+
+<details>
+
+<summary>Condition</summary>
+
+The main parameter to check is the normality of the data. This can be done using the Shapiro test or by graphically visualizing the quantiles :
+
+  - H0 = **The data follow a normal distribution**
+  - H1 = **The data does not follow a normal distribution**
+
+##### `BMI`
+```{r, eval=F}
+# Q-Q plot with qqnorm function for the cholesterol levels
+qqnorm(data_exercice$bmi)
+qqline(data_exercice$bmi)
+```
+
+```{r, echo=F}
+qqnorm(data_exercice$bmi)
+qqline(data_exercice$bmi)
+```
+
+```{r, eval=F}
+# Shapiro test
+shapiro.test(data_exercice$bmi)
+```
+
+```{r, echo=F}
+shapiro.test(data_exercice$bmi)
+```
+
+The BMI variable data **does not follow a normal distribution**. In fact, the **p-value is not significant**. 
+
+</details>
+
+<details>
+
+<summary>Test</summary>
+
+Since the normality is not respected, we use **Kruskal-Wallis test**.
+
+```{r, eval=F}
+# Kruskal-Wallis test
+kruskal.test(data_exercice$bmi, data_exercice$physical_activity)
+```
+
+```{r, echo=F}
+kruskal.test(data_exercice$bmi, data_exercice$physical_activity)
+```
+
+The p-value is below 0.05, this is **significant**. We can **reject H0** and consider that **at least one group has a different average BMI**.
+
+</details>
+
+<details>
+
+<summary>Post-hoc</summary>
+
+In a post-hoc test, we seek to compare the groups two by two, which amounts to positing the following hypotheses:
+
+  - H0 : **There is no difference in average BMI between physical activity group A and B**.
+  - H1 : **There is a difference in average BMI between physical activity group A and B**.
+
+Since we performed a Kruskal-Wallis test, we will use **Dunn's post hoc test**.
+
+```{r, eval=F}
+# If not already installed, install the FSA package
+install.packages("FSA")
+# Activate the package
+library(FSA)
+
+# Dunn post-hoc
+dunnTest(bmi ~ physical_activity, data = data_exercice, kw = F) #kw = F allow to not redo the Kruskal-Wallis test
+```
+
+```{r, echo=F}
+dunnTest(bmi ~ physical_activity, data = data_exercice, kw = F)
+```
+
+All the p-values are **significant in all comparisons**. For every comparisons we can **reject H0**, and we can consider that there is a **difference in average BMI based on the physical activity**. We can notice with the Z-score that when the activity is low, the difference is higher with high practice than with moderate practice. We can say also that patients with low activity tend to have a higher BMI.
+
+</details>
+
+</details>
+
+### III - **Is high blood pressure more common in women?**
+
+<details>
+
+<summary>Response</summary>
+
+<details>
+
+<summary>Visualisation</summary>
+
+Firstly, we create a contingency table to see the repartition of patients with hypertension by sex.
+
+```{r, eval=F}
+# Contingency table between hypertension and sex
+tab <- table(data_exercice$hypertension, data_exercice$sex)
+tab
+```
+
+```{r, echo=F}
+tab <- table(data_exercice$hypertension, data_exercice$sex)
+tab
+```
+
+</details>
+
+<details>
+
+<summary>Hypotheses</summary>
+
+  - H0 : **The proportion of hypertensive patient is the same in woman and man.**
+  - H1 : **The proportion of hypertensive patient is different** 
+
+</details>
+
+<details>
+
+<summary>Condition</summary>
+
+The only condition here is to have a minimum **sample size of 5** to be respected for each class in the contingency table. This is the case here, so we can use **Chi-square homogeneity test**.
+
+</details>
+
+<details>
+
+<summary>Test</summary>
+
+```{r, eval=F}
+# Contingency table between hypertension and sex
+tab <- table(data_exercice$hypertension, data_exercice$sex)
+
+# Chi-square homogeneity test
+chisq.test(tab)
+```
+
+```{r, echo=F}
+tab <- table(data_exercice$hypertension, data_exercice$sex)
+chisq.test(tab)
+```
+
+The test gives a **significant p-value**. So we **reject H0**, and we consider that the **proportion of hypertensive patient is different between women and men**.
+We need to go deeper by observing graphically this difference in terms of proportions.
+
+```{r, eval=F}
+# Observe proportions graphically
+  ggplot(data_exercice, aes(x = sex, fill = hypertension)) + 
+  geom_bar(position = "fill")+ 
+  theme_bw() +
+  labs(x = "", y = "Proportion")
+```
+
+```{r, echo=F}
+ggplot(data_exercice, aes(x = sex, fill = hypertension)) + 
+  geom_bar(position = "fill")+ 
+  theme_bw() +
+  labs(x = "", y = "Proportion")
+```
+
+What we see is that there is indeed a difference in proportions. But not the one we expected. In fact, **more men have high blood pressure than women**.
+
+</details>
+
+</details>
+
+### IV - **Do patients with hypertension have higher blood sugar levels?**
+
+<details>
+
+<summary>Response</summary>
+
+<details>
+
+<summary>Visualisation</summary>
+
+```{r, eval=F}
+ggplot(data = data_exercice, aes(x=hypertension, y = glucose)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
+```{r, echo=F}
+ggplot(data = data_exercice, aes(x=hypertension, y = glucose)) +
+  geom_boxplot() + 
+  labs(x="Diagnosis", y = "Heart rate") +
+  theme_bw()
+```
+
+</details>
+
+<details>
+
+<summary>Hypotheses</summary>
+
+  - H0 : **The average glucose is not different in patients with hypertension and without hypertension**
+  - H1 : **The average glucose is higher in patients with hypertension**
+  
+Here, the question is specific: **we want to know whether the value is higher** in one group compared to the other. Furthermore, the patients are **independent** of one another, so we should prioritize **tests for independent samples**.
+
+</details>
+
+<details>
+
+<summary>Condition</summary>
+
+First, we check whether the **data follows a normal distribution or not**.
+
+  - H0 = **The data follow a normal distribution**
+  - H1 = **The data does not follow a normal distribution**
+
+```{r, eval=F}
+# Q-Q plot with qqnorm function for the glucose levels
+qqnorm(data_exercice$glucose)
+qqline(data_exercice$glucose)
+```
+
+```{r, echo=F}
+qqnorm(data_exercice$glucose)
+qqline(data_exercice$glucose)
+```
+
+```{r, eval=F}
+# Shapiro test
+shapiro.test(data_exercice$glucose)
+```
+
+```{r, echo=F}
+shapiro.test(data_exercice$glucose)
+```
+
+We obtain a **non-significant p-value**, and we can see many **outliers at the extremes on the QQ plot**. We **cannot reject H0**, and therefore we conclude that the data **do not follow a normal distribution**.
+So we’ll start with a nonparametric test: **the Wilcoxon-Mann-Whitney U test**.
+
+</details>
+
+</details>
