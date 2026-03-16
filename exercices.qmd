@@ -351,6 +351,8 @@ tab <- table(data_exercice$hypertension, data_exercice$sex)
 tab
 ```
 
+At first glance, it would appear that three-quarters of the women in the study do not have high blood pressure.
+
 </details>
 
 <details>
