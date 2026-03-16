@@ -435,6 +435,8 @@ ggplot(data = data_exercice, aes(x=hypertension, y = glucose)) +
   theme_bw()
 ```
 
+At first glance, these box plots **do not reveal a clear difference** in glucose levels between the two groups. This requires further investigation through **statistical analysis**.
+
 </details>
 
 <details>
@@ -479,6 +481,34 @@ shapiro.test(data_exercice$glucose)
 
 We obtain a **non-significant p-value**, and we can see many **outliers at the extremes on the QQ plot**. We **cannot reject H0**, and therefore we conclude that the data **do not follow a normal distribution**.
 So we’ll start with a nonparametric test: **the Wilcoxon-Mann-Whitney U test**.
+
+</details>
+
+<details>
+
+<summary>Test</summary>
+
+```{r, eval=F}
+# Wilcoxon-Mann-Whitnet U test
+wilcox.test(data_exercice$glucose[data_exercice$hypertension == "Yes"],
+            data_exercice$glucose[data_exercice$hypertension == "No"], 
+            alternative = "greater",
+            paired = FALSE)
+```
+
+```{r, echo=F}
+# Wilcoxon-Mann-Whitnet U test
+wilcox.test(data_exercice$glucose[data_exercice$hypertension == "Yes"],
+            data_exercice$glucose[data_exercice$hypertension == "No"], 
+            alternative = "greater",
+            paired = FALSE) 
+```
+
+Here, the aim was to determine whether **patients with hypertension had higher glucose levels than others**. There was a sense of direction, hence the `alternative = “greater”`.
+
+Since we specified that the **samples are independent**, we can set `paired = FALSE`, even though this argument defaults to `FALSE`.
+
+The p-value obtained is **greater than 0.05**, so we **cannot reject H0**. This means that, statistically, **patients with hypertension do not have higher glucose levels than the others**.
 
 </details>
 
